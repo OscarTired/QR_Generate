@@ -65,8 +65,8 @@ export default function FormPage() {
   };
 
   const handleDownload = () => {
-    const canvas = qrRef.current?.querySelector('canvas');
-    if (!canvas) return;
+    const svg = qrRef.current?.querySelector('svg');
+    if (!svg) return;
 
     const size = 512;
     const padding = 40;
@@ -89,13 +89,22 @@ export default function FormPage() {
     ctx.moveTo(size - b, size - b - 20); ctx.lineTo(size - b, size - b); ctx.lineTo(size - b - 20, size - b);
     ctx.stroke();
 
-    const inner = size - padding * 2;
-    ctx.drawImage(canvas, padding, padding, inner, inner);
-
-    const link = document.createElement('a');
-    link.download = `qr-${form.project.replace(/\s+/g, '-').toLowerCase()}.png`;
-    link.href = offscreen.toDataURL('image/png');
-    link.click();
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+    const svgUrl = URL.createObjectURL(svgBlob);
+    
+    const img = new Image();
+    img.onload = () => {
+      const inner = size - padding * 2;
+      ctx.drawImage(img, padding, padding, inner, inner);
+      URL.revokeObjectURL(svgUrl);
+      
+      const link = document.createElement('a');
+      link.download = `qr-${form.project.replace(/\s+/g, '-').toLowerCase()}.png`;
+      link.href = offscreen.toDataURL('image/png');
+      link.click();
+    };
+    img.src = svgUrl;
   };
 
   const handleCopyLink = async () => {
