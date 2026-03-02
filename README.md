@@ -83,6 +83,8 @@ npm run dev
 npm run build
 ```
 
+https://github.com/user-attachments/assets/4c23fd22-faaf-4413-8adc-caf2520fa36b
+
 ---
 
 <div align="center">
